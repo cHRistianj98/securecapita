@@ -1,8 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS securecapita;
 
-SET NAMES 'UTF8MB$';
-SET TIME_ZONE = 'US/Eastern';
-SET TIME_ZONE = '-4';
+SET NAMES 'UTF8MB4';
 
 USE securecapita;
 
@@ -67,6 +65,41 @@ CREATE TABLE UserEvents
     created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (event_id) REFERENCES Events (id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS AccountVerifications;
+CREATE TABLE AccountVerifications
+(
+    id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    url     VARCHAR(255) DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT UQ_AccountVerifications_User_Id UNIQUE (user_id),
+    CONSTRAINT UQ_AccountVerifications_Url UNIQUE (url)
+);
+
+DROP TABLE IF EXISTS ResetPasswordVerifications;
+CREATE TABLE ResetPasswordVerifications
+(
+    id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id         BIGINT UNSIGNED NOT NULL,
+    url             VARCHAR(255) DEFAULT NULL,
+    expiration_date DATETIME        NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT UQ_ResetPasswordVerifications_User_Id UNIQUE (user_id),
+    CONSTRAINT UQ_ResetPasswordVerifications_Url UNIQUE (url)
+);
+
+DROP TABLE IF EXISTS TwoFactorVerifications;
+CREATE TABLE TwoFactorVerifications
+(
+    id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id         BIGINT UNSIGNED NOT NULL,
+    code             VARCHAR(10) DEFAULT NULL,
+    expiration_date DATETIME        NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT UQ_TwoFactorVerifications_User_Id UNIQUE (user_id),
+    CONSTRAINT UQ_TwoFactorVerifications_Url UNIQUE (code)
 );
 
 
