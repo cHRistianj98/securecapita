@@ -7,7 +7,6 @@ import io.christianj98.securecapita.repository.RoleRepository;
 import io.christianj98.securecapita.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,12 +18,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static io.christianj98.securecapita.enumeration.RoleType.ROLE_USER;
 import static io.christianj98.securecapita.enumeration.VerificationType.ACCOUNT;
 import static io.christianj98.securecapita.query.UserQuery.COUNT_USER_EMAIL_QUERY;
+import static io.christianj98.securecapita.query.UserQuery.INSERT_ACCOUNT_VERIFICATION_URL_QUERY;
 import static io.christianj98.securecapita.query.UserQuery.INSERT_USER_QUERY;
 import static java.util.Objects.requireNonNull;
 
@@ -39,31 +38,25 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     @Override
     public User create(final User user) {
-        // Check the email is unique
         if (getEmailCount(user.getEmail().trim().toLowerCase()) > 0) {
             throw new ApiException("Email already in use. Please use a different email and try again.");
         }
-        // save new user
         try {
             KeyHolder holder = new GeneratedKeyHolder();
             SqlParameterSource parameters = getSqlParameterSource(user);
             jdbc.update(INSERT_USER_QUERY, parameters, holder);
             user.setId(requireNonNull(holder.getKey()).longValue());
-            // Add role to the user
             roleRepository.addRoleToUser(user.getId(), ROLE_USER.name());
-            // Send verification URL
             String verificationUrl = getVerificationUrl(UUID.randomUUID().toString(), ACCOUNT.getType());
-            // Save URL in verification table
-            // Send email to user with verification URL
-            // Return the newly created user
-            // If any errors, throw exception with proper message
-        } catch (EmptyResultDataAccessException exception) {
-
+            jdbc.update(INSERT_ACCOUNT_VERIFICATION_URL_QUERY,
+                    Map.of("userId", user.getId(), "url", verificationUrl));
+            // emailService.sendVerificationUrl(user.getFirstName(), user.getEmail(), verificationUrl, ACCOUNT);
+            user.setEnabled(false);
+            user.setNotLocked(true);
+            return user;
         } catch (Exception exception) {
-
+            throw new ApiException("An error occurred: Pleas try again.");
         }
-
-        return null;
     }
 
     private SqlParameterSource getSqlParameterSource(User user) {
