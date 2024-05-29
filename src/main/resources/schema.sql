@@ -4,8 +4,7 @@ SET NAMES 'UTF8MB4';
 
 USE securecapita;
 
-DROP TABLE IF EXISTS Users;
-CREATE TABLE Users
+CREATE TABLE IF NOT EXISTS Users
 (
     id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     first_name   VARCHAR(50)     NOT NULL,
@@ -24,8 +23,7 @@ CREATE TABLE Users
     CONSTRAINT UQ_Users_Email UNIQUE (email)
 );
 
-DROP TABLE IF EXISTS Roles;
-CREATE TABLE Roles
+CREATE TABLE IF NOT EXISTS Roles
 (
     id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(50)     NOT NULL,
@@ -33,8 +31,7 @@ CREATE TABLE Roles
     CONSTRAINT UQ_Roles_Name UNIQUE (name)
 );
 
-DROP TABLE IF EXISTS UserRoles;
-CREATE TABLE UserRoles
+CREATE TABLE IF NOT EXISTS UserRoles
 (
     id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
@@ -45,8 +42,7 @@ CREATE TABLE UserRoles
 );
 
 
-DROP TABLE IF EXISTS Events;
-CREATE TABLE Events
+CREATE TABLE IF NOT EXISTS Events
 (
     id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     type        VARCHAR(50)     NOT NULL CHECK (type IN ('LOGIN_ATTEMPT', 'LOGIN_ATTEMPT_FAILURE')),
@@ -54,8 +50,7 @@ CREATE TABLE Events
     CONSTRAINT UQ_Events_Type UNIQUE (type)
 );
 
-DROP TABLE IF EXISTS UserEvents;
-CREATE TABLE UserEvents
+CREATE TABLE IF NOT EXISTS UserEvents
 (
     id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id    BIGINT UNSIGNED NOT NULL,
@@ -67,8 +62,7 @@ CREATE TABLE UserEvents
     FOREIGN KEY (event_id) REFERENCES Events (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS AccountVerifications;
-CREATE TABLE AccountVerifications
+CREATE TABLE IF NOT EXISTS AccountVerifications
 (
     id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
@@ -78,8 +72,7 @@ CREATE TABLE AccountVerifications
     CONSTRAINT UQ_AccountVerifications_Url UNIQUE (url)
 );
 
-DROP TABLE IF EXISTS ResetPasswordVerifications;
-CREATE TABLE ResetPasswordVerifications
+CREATE TABLE IF NOT EXISTS ResetPasswordVerifications
 (
     id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id         BIGINT UNSIGNED NOT NULL,
@@ -90,8 +83,7 @@ CREATE TABLE ResetPasswordVerifications
     CONSTRAINT UQ_ResetPasswordVerifications_Url UNIQUE (url)
 );
 
-DROP TABLE IF EXISTS TwoFactorVerifications;
-CREATE TABLE TwoFactorVerifications
+CREATE TABLE IF NOT EXISTS TwoFactorVerifications
 (
     id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id         BIGINT UNSIGNED NOT NULL,
@@ -101,26 +93,3 @@ CREATE TABLE TwoFactorVerifications
     CONSTRAINT UQ_TwoFactorVerifications_User_Id UNIQUE (user_id),
     CONSTRAINT UQ_TwoFactorVerifications_Url UNIQUE (code)
 );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
