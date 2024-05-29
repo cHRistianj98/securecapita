@@ -14,15 +14,14 @@ import java.util.Collection;
 import java.util.Map;
 
 import static io.christianj98.securecapita.enumeration.RoleType.ROLE_USER;
+import static io.christianj98.securecapita.query.RoleQuery.INSERT_ROLE_TO_USER;
+import static io.christianj98.securecapita.query.RoleQuery.SELECT_ROLE_BY_NAME_QUERY;
 import static java.util.Objects.requireNonNull;
 
 @Repository
 @RequiredArgsConstructor
 @Slf4j
 public class RoleRepositoryImpl implements RoleRepository<Role> {
-
-    private static final String SELECT_ROLE_BY_NAME_QUERY = "";
-    private static final String INSERT_ROLE_TO_USER = "";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
