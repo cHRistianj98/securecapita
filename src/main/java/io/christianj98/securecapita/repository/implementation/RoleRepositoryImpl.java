@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import static io.christianj98.securecapita.enumeration.RoleType.ROLE_USER;
-import static io.christianj98.securecapita.query.RoleQuery.INSERT_ROLE_TO_USER;
+import static io.christianj98.securecapita.query.RoleQuery.INSERT_ROLE_TO_USER_QUERY;
 import static io.christianj98.securecapita.query.RoleQuery.SELECT_ROLE_BY_NAME_QUERY;
 import static java.util.Objects.requireNonNull;
 
@@ -54,9 +54,9 @@ public class RoleRepositoryImpl implements RoleRepository<Role> {
     public void addRoleToUser(final Long userId, final String roleName) {
         log.info("Adding role {} to use id: {}", roleName, userId);
         try {
-            Role role = jdbcTemplate.queryForObject(SELECT_ROLE_BY_NAME_QUERY, Map.of("roleName", roleName),
+            Role role = jdbcTemplate.queryForObject(SELECT_ROLE_BY_NAME_QUERY, Map.of("name", roleName),
                     new RoleRowMapper());
-            jdbcTemplate.update(INSERT_ROLE_TO_USER, Map.of("userId", userId, "roleId",
+            jdbcTemplate.update(INSERT_ROLE_TO_USER_QUERY, Map.of("user_id", userId, "role_id",
                     requireNonNull(role).getId()));
         } catch (EmptyResultDataAccessException exception) {
             throw new ApiException("No role found by name: " + ROLE_USER.name());
